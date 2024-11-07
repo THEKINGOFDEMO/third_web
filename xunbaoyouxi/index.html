@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字寻宝</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-image: url('beijing.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        #gameContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        #log {
+            margin-top: 20px;
+            max-width: 100%;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s;
+            opacity: 0;
+        }
+        .visible {
+            opacity: 1;
+        }
+        .treasure-box {
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 10px;
+            background-size: cover;
+            cursor: pointer;
+            transition: background-image 1s;
+        }
+        #startButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #startButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <h1>文字寻宝</h1>
+        <button id="startButton">开始游戏</button>
+        <div id="log"></div>
+        <div id="treasureContainer"></div>
+    </div>
+    <script>
+        class TreasureMap {
+            static getClue(step) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const clues = [
+                            "在古老的图书馆里找到了一个新的线索...",
+                            "在神秘的洞穴中发现了一些古老的文字...",
+                            "在隐秘的森林中找到了一个失落的卷轴..."
+                        ];
+                        resolve(clues[step % clues.length]);
+                    }, 1000);
+                });
+            }
+
+            static decodeAncientScript(clue) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (!clue) {
+                            reject("没有线索可以解码!");
+                        }
+                        resolve("解码成功!宝藏在一座古老的神庙中...");
+                    }, 1500);
+                });
+            }
+
+            static searchTemple(location) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        const random = Math.random();
+                        if (random < 0.5) {
+                            reject("糟糕!遇到了神庙守卫!");
+                        }
+                        resolve("找到了一个神秘的箱子...");
+                    }, 2000);
+                });
+            }
+
+            static openTreasureBox() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve("恭喜!你找到了传说中的宝藏!");
+                    }, 1000);
+                });
+            }
+        }
+
+        let step = 0;
+
+        async function startTreasureHunt() {
+            const log = document.getElementById('log');
+            const treasureContainer = document.getElementById('treasureContainer');
+            treasureContainer.innerHTML = '';
+
+            try {
+                const clue = await TreasureMap.getClue(step);
+                logMessage(clue);
+
+                const decodedClue = await TreasureMap.decodeAncientScript(clue);
+                logMessage(decodedClue);
+
+                const location = await TreasureMap.searchTemple(decodedClue);
+                logMessage(location);
+
+                initializeTreasureBoxes();
+            } catch (error) {
+                logMessage(error + " 但别灰心，继续探索新的区域...");
+                step++;
+                setTimeout(startTreasureHunt, 2000);
+            }
+        }
+
+        function initializeTreasureBoxes() {
+            const treasureContainer = document.getElementById('treasureContainer');
+            const boxes = ['empty', 'empty', 'treasure'].sort(() => Math.random() - 0.5);
+
+            boxes.forEach(status => {
+                const box = document.createElement('div');
+                box.className = 'treasure-box';
+                box.style.backgroundImage = "url('closed.png')";
+                box.addEventListener('click', async () => {
+                    if (box.style.backgroundImage.includes('closed')) {
+                        box.style.backgroundImage = status === "treasure" ? "url('open_treasure.png')" : "url('open_empty.png')";
+                        logMessage(status === "treasure" ? await TreasureMap.openTreasureBox() : "宝箱是空的! 继续寻找下一个线索...");
+                        disableAllBoxes();
+                        setTimeout(() => {
+                            treasureContainer.innerHTML = '';
+                            if (status !== "treasure") {
+                                step++;
+                                startTreasureHunt();
+                            }
+                        }, 1000);
+                    }
+                });
+                treasureContainer.appendChild(box);
+            });
+        }
+
+        function logMessage(message) {
+            const log = document.getElementById('log');
+            const div = document.createElement('div');
+            div.className = 'message';
+            div.textContent = message;
+            log.appendChild(div);
+            setTimeout(() => div.classList.add('visible'), 100);
+        }
+
+        function disableAllBoxes() {
+            const boxes = document.querySelectorAll('.treasure-box');
+            boxes.forEach(box => box.style.cursor = 'default');
+        }
+
+        document.getElementById('startButton').addEventListener('click', startTreasureHunt);
+    </script>
+</body>
+</html>
