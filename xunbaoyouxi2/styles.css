@@ -1,0 +1,108 @@
+ /* 设置基本的页面样式 */
+ body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 隐藏页面溢出内容 */
+    background-image: url('images/beijing.jpg'); /* 背景图 */
+    background-size: cover; /* 图片覆盖整个背景 */
+    background-position: center; /* 背景居中 */
+    font-family: 'Arial', sans-serif; /* 字体样式 */
+}
+#gameContainer {
+    position: absolute;
+    top: 50%; /* 将游戏容器居中 */
+    left: 50%;
+    transform: translate(-50%, -50%); /* 定位居中 */
+    width: 80%;
+    max-width: 600px; /* 最大宽度 */
+    background-color: rgba(255, 255, 255, 0.9); /* 背景色及透明度 */
+    padding: 20px; /* 内边距 */
+    border-radius: 8px; /* 边角圆润 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 阴影效果 */
+    text-align: center; /* 文本居中 */
+}
+#log {
+    margin-top: 20px; /* 上边距 */
+    max-width: 100%; /* 最大宽度 */
+}
+.message {
+    margin: 10px 0; /* 上下边距 */
+    padding: 10px; /* 内边距 */
+    background-color: #fff; /* 背景色 */
+    border-radius: 8px; /* 边角圆润 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    transition: opacity 0.5s; /* 透明度过渡 */
+    opacity: 0; /* 初始透明度 */
+}
+.visible {
+    opacity: 1; /* 显示时的透明度 */
+}
+.treasure-box {
+    width: 100px; /* 宝箱宽度 */
+    height: 100px; /* 宝箱高度 */
+    display: inline-block; /* 使宝箱水平排列 */
+    margin: 10px; /* 上下左右边距 */
+    background-size: cover; /* 背景图片覆盖 */
+    cursor: pointer; /* 鼠标指针样式 */
+    transition: background-image 1s; /* 背景图片变化过渡 */
+}
+#startButton, #setPlayerInfoButton, #closePokedexButton {
+    padding: 10px 20px; /* 内边距 */
+    background-color: #007bff; /* 按钮背景色 */
+    color: #fff; /* 按钮文字颜色 */
+    border: none; /* 无边框 */
+    border-radius: 5px; /* 边角圆润 */
+    cursor: pointer; /* 鼠标指针样式 */
+    transition: background-color 0.3s; /* 背景色过渡 */
+}
+#startButton:hover, #setPlayerInfoButton:hover, #closePokedexButton:hover {
+    background-color: #0056b3; /* 悬停时的背景色 */
+}
+#playerInfoContainer {
+    margin-bottom: 20px; /* 下边距 */
+    display: flex; /* 使用flex布局 */
+    flex-direction: column; /* 列方向 */
+    align-items: center; /* 居中对齐 */
+}
+#playerId, #nickname {
+    padding: 10px; /* 内边距 */
+    margin: 5px 0; /* 上下边距 */
+    border: 1px solid #ccc; /* 边框 */
+    border-radius: 5px; /* 边角圆润 */
+    width: 80%; /* 宽度 */
+}
+#pokedex {
+    position: fixed; /* 固定位置 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 居中 */
+    width: 80%;
+    max-width: 400px; /* 最大宽度 */
+    background-color: rgba(255, 255, 255, 0.9); /* 背景 */
+    padding: 20px; /* 内边距 */
+    border-radius: 8px; /* 边角圆润 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 阴影效果 */
+    text-align: center; /* 文本居中 */
+    z-index: 1000; /* 堆叠顺序 */
+}
+#pokedexContent img {
+    max-width: 100%; /* 图片最大宽度 */
+    height: auto; /* 高度自适应 */
+    margin-top: 10px; /* 上边距 */
+    border-radius: 8px; /* 边角圆润 */
+}
+#pokedexMenu {
+    list-style: none; /* 无列表样式 */
+    padding: 0; /* 去掉内边距 */
+}
+#pokedexMenu li {
+    margin: 5px 0; /* 上下边距 */
+}
+#pokedexMenu a {
+    text-decoration: none; /* 去掉下划线 */
+    color: #007bff; /* 文字颜色 */
+    transition: color 0.3s; /* 颜色过渡 */
+}
+#pokedexMenu a:hover {
+    color: #0056b3; /* 悬停时的文字颜色 */
+}

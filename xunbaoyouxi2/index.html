@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字寻宝</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <h1>文字寻宝</h1>
+        
+        <!-- 玩家信息录入区域 -->
+        <div id="playerInfoContainer">
+            <input type="text" id="playerId" placeholder="玩家ID" required>
+            <input type="text" id="nickname" placeholder="昵称" required>
+            <button id="setPlayerInfoButton">确认玩家信息</button>
+        </div>
+        
+        <!-- 开始游戏按钮区域 -->
+        <div id="startGameContainer" style="display: none;">
+            <button id="startButton">开始游戏</button>
+        </div>
+        
+        <div id="log"></div> <!-- 用于显示游戏消息 -->
+        <div id="treasureContainer"></div> <!-- 用于显示宝箱 -->
+    </div>
+    <button id="pokedexButton">查看图鉴</button> <!-- 查看图鉴的按钮 -->
+    <div id="pokedex" style="display: none;"> <!-- 图鉴内容 -->
+        <div id="pokedexMenuContainer">
+            <h2>图鉴目录</h2>
+            <ul id="pokedexMenu"></ul> <!-- 图鉴菜单 -->
+        </div>
+        <div id="pokedexContent"></div> <!-- 图鉴详细内容 -->
+        <button id="closePokedexButton">关闭</button> <!-- 关闭图鉴的按钮 -->
+    </div>
+    <audio id="backgroundMusic" autoplay loop> <!-- 后台音乐 -->
+        <source src="background.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script src="script.js"></script>
+    
+</body>
+</html>
