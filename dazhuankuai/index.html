@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breakout Game</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // 球参数
+    let ballRadius = 10;
+    let x = canvas.width / 2;
+    let y = canvas.height - 30;
+    let dx = 2;
+    let dy = -2;
+
+    // 板参数
+    const paddleHeight = 10;
+    const paddleWidth = 75;
+    let paddleX = (canvas.width - paddleWidth) / 2;
+
+    // 控制变量
+    let rightPressed = false;
+    let leftPressed = false;
+
+    // 砖块参数
+    let brickRowCount = 5;
+    let brickColumnCount = 3;
+    const brickWidth = 75;
+    const brickHeight = 20;
+    const brickPadding = 10;
+    const brickOffsetTop = 30;
+    const brickOffsetLeft = 30;
+
+    // 分数与生命值
+    let score = 0;
+    let lives = 3;
+
+    // 音效
+    const soundEffect = new Audio('http://www.soundjay.com/button/sounds/button-16.mp3'); // 碰撞音效
+
+    // 砖块数组
+    let bricks = createBricks();
+
+    // 事件监听
+    document.addEventListener("keydown", (e) => {
+        if (e.code === "ArrowRight") rightPressed = true;
+        if (e.code === "ArrowLeft") leftPressed = true;
+    });
+
+    document.addEventListener("keyup", (e) => {
+        if (e.code === "ArrowRight") rightPressed = false;
+        if (e.code === "ArrowLeft") leftPressed = false;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        const relativeX = e.clientX - canvas.offsetLeft;
+        if (relativeX > 0 && relativeX < canvas.width) {
+            paddleX = relativeX - paddleWidth / 2;
+        }
+    });
+
+    // 创建砖块
+    function createBricks() {
+        return Array.from({ length: brickColumnCount }, () => 
+            Array.from({ length: brickRowCount }, () => ({
+                x: 0, 
+                y: 0, 
+                status: 1,
+                type: Math.floor(Math.random() * 3) // 随机砖块类型
+            }))
+        );
+    }
+
+    // 碰撞检测
+    function collisionDetection() {
+        bricks.forEach((column, c) => {
+            column.forEach((brick, r) => {
+                if (brick.status === 1) {
+                    if (x > brick.x && x < brick.x + brickWidth && y > brick.y && y < brick.y + brickHeight) {
+                        dy = -dy;
+                        brick.status = 0;
+                        score += (brick.type + 1); // 每种砖块得分不同
+                        soundEffect.play();
+                        // 检测是否摧毁了所有砖块
+                        if (bricks.flat().every(brick => brick.status === 0)) {
+                            resetBricks(); // 重新开始新关卡
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    // 重置砖块并增加行数
+    function resetBricks() {
+        brickRowCount++; // 增加行数
+        bricks = createBricks(); // 重新生成砖块
+        // 重置球的位置
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        paddleX = (canvas.width - paddleWidth) / 2;
+        dx = 2; // 重置速度
+        dy = -2; 
+    }
+
+    // 绘制球
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    // 绘制板
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    // 绘制砖块
+    function drawBricks() {
+        bricks.forEach((column, c) => {
+            column.forEach((brick, r) => {
+                if (brick.status === 1) {
+                    const brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                    const brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                    brick.x = brickX;
+                    brick.y = brickY;
+                    ctx.beginPath();
+                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                    // 不同颜色区分砖块类型
+                    ctx.fillStyle = brick.type === 0 ? "#0095DD" : (brick.type === 1 ? "#FF0000" : "#00FF00");
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            });
+        });
+    }
+
+    // 绘制分数
+    function drawScore() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText(`Score: ${score}`, 8, 20);
+    }
+
+    // 绘制生命值
+    function drawLives() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
+    }
+
+    // 主绘制函数
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBricks();
+        drawBall();
+        drawPaddle();
+        drawScore();
+        drawLives();
+        collisionDetection();
+
+        // 球与边界的碰撞检测
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+            dx = -dx; // 反向
+        }
+        if (y + dy < ballRadius) {
+            dy = -dy; // 反向
+        } else if (y + dy > canvas.height - ballRadius) {
+            if (x > paddleX && x < paddleX + paddleWidth) {
+                dy = -dy; // 反向
+            } else {
+                lives--;
+                if (!lives) {
+                    alert("GAME OVER");
+                    document.location.reload(); // 重新载入游戏
+                } else {
+                    x = canvas.width / 2; // 重置球位置
+                    y = canvas.height - 30;
+                    dx = 2; // 重置速度
+                    dy = -2;
+                    paddleX = (canvas.width - paddleWidth) / 2; // 重置板的位置
+                }
+            }
+        }
+
+        // 控制板的移动
+        if (rightPressed && paddleX < canvas.width - paddleWidth) {
+            paddleX += 7; // 向右移动
+        } else if (leftPressed && paddleX > 0) {
+            paddleX -= 7; // 向左移动
+        }
+
+        x += dx; // 更新球的位置
+        y += dy;
+        requestAnimationFrame(draw); // 循环调用
+    }
+
+    draw(); // 开始游戏
+</script>
+
+</body>
+</html>
